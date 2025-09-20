@@ -29,3 +29,5 @@ From within the repo, start Jupyter notebook:
 jupyter notebook
 ```
 To run a notebook, simply load the notebook and execute the cells in succession. 
+Detailed instructions on software requirements and licenses, how to set up the requirements, and input files needed to execute each notebook can be found in the notebooks. 
+

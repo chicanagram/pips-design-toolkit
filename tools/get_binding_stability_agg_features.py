@@ -2,7 +2,7 @@ from feature_extraction.binding import get_yasara_binding_features
 from feature_extraction.stability import  get_yasara_foldx_stability_features
 from feature_extraction.aggregation import  get_aggregation_features
 
-def main():
+def get_binding_stability_agg_features():
     features_to_extract = ['binding', 'stability', 'aggregation']
     combine_feature_into_ml_dataset = False
 
@@ -16,4 +16,4 @@ def main():
         get_aggregation_features()
 
 if __name__ == "__main__":
-    main()
+    get_binding_stability_agg_features()

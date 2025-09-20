@@ -13,36 +13,8 @@ except ImportError as e:
 import os
 import numpy as np
 import platform
+from utils.variables import aaList, aaList_with_X
 opsys = platform.system()
-
-
-data_folder = '../data/'
-
-aaList = list("ACDEFGHIKLMNPQRSTVWY")
-mapping = {
-    'A': 'Ala',
-    'H': 'His',
-    'Y': 'Tyr',
-    'R': 'Arg',
-    'T': 'Thr',
-    'K': 'Lys',
-    'M': 'Met',
-    'D': 'Asp',
-    'N': 'Asn',
-    'C': 'Cys',
-    'Q': 'Gln',
-    'E': 'Glu',
-    'G': 'Gly',
-    'I': 'Ile',
-    'L': 'Leu',
-    'F': 'Phe',
-    'P': 'Pro',
-    'S': 'Ser',
-    'W': 'Trp',
-    'V': 'Val'
-    }
-
-mapping_inv = {v.upper():k for k,v in mapping.items()}
 
 def sort_list(lst):
     lst.sort()
@@ -237,6 +209,7 @@ def get_mutations(wildtype_list):
                 mutations.append(mt)
     print('mutants:', mutations)
     return mutations
+    
 def get_mutation_list_from_inputfile(input_fname, input_dir):
     # get mutations
     # input is a list of positions to mutate
@@ -260,6 +233,19 @@ def get_mutation_list_from_inputfile(input_fname, input_dir):
                     res_mut_dict[wt] = []
                 res_mut_dict[wt].append(mut)
     return mutations,  res_mut_dict
+
+def list_all_mutations(seq, ignore_mutations_to_WT=True):
+    mut_all = []
+    for i in range(len(seq)):
+        pos = str(i+1)
+        wt_aa = seq[i]
+        if ignore_mutations_to_WT:
+            mut_pos = [wt_aa+pos+aa for aa in aaList if aa!=wt_aa]
+        else:
+            mut_pos = [wt_aa + pos + aa for aa in aaList]
+        mut_all += mut_pos
+    return mut_all
+    
 def fetch_sequences_from_fasta(sequence_fpath):
     from Bio import SeqIO
     sequence_names = []
@@ -270,6 +256,7 @@ def fetch_sequences_from_fasta(sequence_fpath):
         sequence_list.append(str(record.seq))
         sequence_descriptions.append(record.description)
     return sequence_list, sequence_names, sequence_descriptions
+    
 def write_sequence_to_fasta(sequences, seq_names, filename, fasta_dir):
     fasta_file = fasta_dir + filename + '.fasta'
     if isinstance(sequences, str) and isinstance(seq_names, str):
@@ -330,3 +317,150 @@ def compute_entropy(probs_matrix):
     # Convert entropy_values to a numpy array for convenience
     entropy_values = np.array(entropy_values)
     return entropy_values
+
+def get_log_likelihood_ratios(probs_matrix, seq, plot_heatmap=True, seq_name=None, savefig=None, print_positive_LLR_mutations=False):
+
+    if not isinstance(probs_matrix, np.ndarray):
+        pos_list = probs_matrix.columns.tolist()
+        probs_matrix = probs_matrix.to_numpy()
+    else:
+        pos_list = list(range(1,len(seq)+1))
+    wt_aa_pos = [seq[pos-1] for pos in pos_list]
+
+    # get amino acid list to plot
+    if 'X' in wt_aa_pos:
+        aa_list = aaList_with_X
+    else:
+        aa_list = aaList
+    probs_matrix = probs_matrix[:len(aa_list), :]
+
+    # get N_res_per_heatmap_row
+    if len(pos_list) < 150: N_res_per_heatmap_row = len(pos_list)
+    else: N_res_per_heatmap_row = 100
+
+    # get LLRs
+    diff_logprob_heatmap = np.zeros_like(probs_matrix)
+    diff_logprob_heatmap[:] = np.nan
+    pos_w_positiveLLR = {}
+    for i, pos in enumerate(pos_list):
+        probs_byres = probs_matrix[:,i]
+        wt_aa = seq[pos-1]
+        if wt_aa!='-':
+            wt_idx = aa_list.index(wt_aa)
+            prob_wt = probs_byres[wt_idx]
+            diff_logprob = np.round(np.log(probs_byres) - np.log(prob_wt),3)
+            diff_logprob_heatmap[:,i] = diff_logprob
+            # get positions with positive LLR vs. WT
+            posLLR_aa_idx = np.where(diff_logprob>0)[0]
+            if len(posLLR_aa_idx) > 0:
+                mut_llr_list = [(wt_aa+str(pos)+aa_list[k], diff_logprob[k]) for k in posLLR_aa_idx]
+                pos_w_positiveLLR.update({pos: mut_llr_list})
+                if print_positive_LLR_mutations:
+                    print(pos, end=':  ')
+                    for (mut, llr) in mut_llr_list:
+                        print(f'{mut} ({llr})', end='; ')
+                    print()
+        else:
+            pass
+    diff_logprob_heatmap = pd.DataFrame(diff_logprob_heatmap, columns=pos_list)
+    if plot_heatmap:
+        plot_variant_heatmap(diff_logprob_heatmap, seq, N_res_per_heatmap_row, aa_list, seq_name=seq_name, savefig=savefig, figtitle='Predicted Effects of Mutations on Protein Sequence (LLR)')
+
+    return diff_logprob_heatmap, pos_w_positiveLLR
+
+def flatten_2D_arr(arr2D, seq, MT_aa=aaList):
+    """
+    arr2D is a 2-dimensional matrix
+        axis 0 (vertical): 20 amino acids along axis 0
+        axis 1 (horizontal): sequence positions
+    """
+    if not isinstance(arr2D, np.ndarray):
+        WT_res = [seq[pos-1]+str(pos) for pos in arr2D.columns.tolist()]
+        arr2D = arr2D.to_numpy()
+    else:
+        WT_res = [seq[pos - 1] + str(pos) for pos in list(range(1, arr2D.shape[1] + 1))]
+
+    arr1D = arr2D.flatten('F')
+    mutations = [wt + mt for wt in WT_res for mt in MT_aa]
+    return arr1D, mutations
+
+
+def compute_pppl(probs, sequence, pos_list=None):
+    """
+    Compute the pseudo-perplexity for a given sequence given the full probability matrix for all possible substitutions
+    Input probs matrix has amino acid substitutions along axis 0, and sequence positions along axis 1
+    """
+    if pos_list is None:
+        pos_list = list(range(1,len(sequence)+1))
+    log_probs_wt = []
+    for i, pos in enumerate(pos_list):
+        wt_aa = sequence[pos-1]
+        log_probs_wt.append(np.log(probs[aaList_with_X.index(wt_aa),i]))
+    log_probs_wt = [logprob for logprob in log_probs_wt if ~np.isnan(logprob)]
+    pppl = -sum(log_probs_wt)/len(log_probs_wt)
+    print('\nPPPL:', pppl)
+    return pppl
+
+
+def compose_prob_entropy_PPPL_outputs(probs_matrix_list, seqs, seq_names, out_dir=None, fname_suffix='_MutProbs'):
+    """
+    Give the probability matrix for all substitutions for a set of positions, calculate entropy and pppl
+    Input probability matrix has: axis 0 -> amino acids; axis 1: positions in sequence
+    """
+    if not isinstance(probs_matrix_list, list):
+        probs_matrix_list = [probs_matrix_list]
+        seqs = [seqs]
+        seq_names = [seq_names]
+
+    pppl_list = []
+    df_list = []
+    for i, (probs, seq, seq_name) in enumerate(zip(probs_matrix_list, seqs, seq_names)):
+        print(f'Composing CSV for {seq_name}...')
+        # convert pandas dataframe to numpy array if needed
+        if not isinstance(probs, np.ndarray):
+            pos_list = probs.columns.tolist()
+            probs = probs.to_numpy()
+        else:
+            pos_list = list(range(1,len(seq)+1))
+        wt_aa_pos = [seq[pos-1] for pos in pos_list]
+        print('# of wt_aa_pos:', len(wt_aa_pos))
+
+        # get alphabet
+        if 'X' in wt_aa_pos:
+            aa_list = aaList_with_X
+        else:
+            aa_list = aaList
+        probs = probs[:len(aa_list), :]
+        probs /= np.sum(probs, axis=0)
+
+        # calculate PPPL
+        pppl = compute_pppl(probs, seq, pos_list)
+        pppl_list.append(pppl)
+
+        # calculate entropy and plot
+        entropy_values = compute_entropy(probs)
+        print('Obtained entropies for each residue.')
+
+        # save probabilities, entropy, PPPL to CSV file
+        df_cols = ['RealPos', 'AA', 'entropy', 'pppl'] + aa_list
+        df_vals = np.zeros((len(pos_list), len(df_cols)))
+        df_vals[:, 4:] = np.transpose(probs)
+        df = pd.DataFrame(df_vals, columns=df_cols)
+        df['RealPos'] = pos_list
+        df['RealPos'] = df['RealPos'].astype(int)
+        df['AA'] = wt_aa_pos
+        df['entropy'] = entropy_values
+        df['pppl'] = pppl
+        # remove rows where all AA prob values are NaN
+        df = df.dropna(subset=aa_list, how="all")
+        df_list.append(df)
+
+        # save CSV
+        if out_dir is not None:
+            csv_fpath = f'{out_dir}{seq_name}{fname_suffix}.csv'
+            df[df_cols].reset_index(drop=True).to_csv(csv_fpath)
+            print(f'Saved MutProbs CSV for {seq_names}: {csv_fpath}')
+
+    if len(df_list)==1:
+        df_list = df_list[0]
+    return df_list

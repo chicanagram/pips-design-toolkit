@@ -3,6 +3,7 @@ import numpy as np
 import os
 if os.path.basename(os.getcwd()) != 'feature_extraction': os.chdir('./feature_extraction/')
 from utils.utils import aaList, mkDir, opsys, get_mutation_list_from_inputfile, split_mutation, get_mutstr, findProcess, exit_program, save_dict_as_csv, combine_csv_files
+from utils.variables import data_folder
 if opsys == 'Windows': yasara_process_name = 'YASARA.exe'
 else: yasara_process_name = 'yasara'
 
@@ -41,7 +42,7 @@ def mutate_residue(
         minimize_energy=True,
         resetSce=False,
         nrep=5,
-        ff='AMBER15FB',
+        ff='YASARA2',
         mvdist=4,
         mvdrug=1,
         surfout=1.75,
@@ -231,16 +232,15 @@ def mutate_residue(
         print('Saved FULL results for ' + struct + mutant + ' to CSV (mode=' + write_mode + '):', log_fpath_full)
 
 
-def get_yasara_binding_features():
-    # set inputs and parameters
-    nrep = 5
-    input_dir = '../data/feature_extraction/Input/'
-    struct_dir = input_dir
-    output_dir = '../data/feature_extraction/'
-    input_fname = 'GOh1052_mutPos_DomainIII.txt'
-    struct_fname = 'S152_1GOG_GOh1001b_postOpt'
+def get_yasara_binding_features(
+    input_fname,
+    struct_fname,
+    input_dir,
+    struct_dir,
+    output_dir,
+    nrep
+):
     mkDir('postOpt', output_dir)
-
     mutations, res_mut_dict = get_mutation_list_from_inputfile(input_fname, input_dir)
     mutations = mutations[:5]
     print('# of positions to mutate:', len(res_mut_dict), list(res_mut_dict.keys()))
@@ -252,6 +252,23 @@ def get_yasara_binding_features():
         proc_num += 1
     yasara_pid = findProcess(yasara_process_name)[-1]
     exit_program(yasara_pid)
+    
 
 if __name__ == "__main__":
-    get_yasara_binding_features()
+    
+    # set inputs and parameters
+    input_fname = 'GOh1052_mutPos_DomainIII.txt'
+    struct_fname = 'S152_1GOG_GOh1001b_postOpt'
+    input_dir = data_folder + 'feature_extraction/Input/'
+    struct_dir = input_dir
+    output_dir = data_folder + 'feature_extraction/'
+    nrep = 5
+    
+    get_yasara_binding_features(
+        input_fname,
+        struct_fname,
+        input_dir,
+        struct_dir,
+        output_dir,
+        nrep
+    )

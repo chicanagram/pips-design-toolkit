@@ -5,9 +5,9 @@ from yasara import foldx_abspath
 import os
 if os.path.basename(os.getcwd()) != 'feature_extraction': os.chdir('./feature_extraction/')
 from utils.utils import opsys, mkDir, get_mutation_list_from_inputfile, split_mutation, get_mutstr, findProcess, exit_program
+from utils.variables import data_folder
 if opsys == 'Windows': yasara_process_name = 'YASARA.exe'
 else: yasara_process_name = 'yasara'
-
 
 
 def yasara_mutate_residue(
@@ -220,20 +220,21 @@ def run_stability_pipeline(mutation, input_pdb_fname, pdb_dir, swapRes_dir, repa
     print('Finished running foldxBuild on '+mutstr)
 
 
-def get_yasara_foldx_stability_features():
-    # define directories & filenames
-    input_dir = '../data/feature_extraction/Input/'
-    pdb_dir = input_dir
-    output_dir = '../data/feature_extraction/'
-    input_fname = 'GOh1052_mutPos_DomainIII.txt'
-    input_pdb_fname = 'YASARA_2EIE_GOh1052.pdb'
-    output_fname = 'DDGstability_GOh1052.csv'
+def get_yasara_foldx_stability_features(
+        input_fname,
+        input_pdb_fname,
+        output_fname,
+        input_dir=data_folder+'feature_extraction/Input/',
+        pdb_dir=data_folder+'feature_extraction/Input/',
+        output_dir = data_folder+'feature_extraction/',
+        remove_existing_dir=False,
+        receptor_molname='A',
+):
+
     log_fname = input_pdb_fname.strip('.pdb')
     swapRes_dir = output_dir + 'SwapRes/'
     repair_dir = output_dir + 'Repair/'
     build_dir = output_dir + 'Build/'
-    remove_existing_dir = False
-    receptor_molname = 'A'
 
     # get mutations
     mutations, res_mut_dict = get_mutation_list_from_inputfile(input_fname, input_dir)
@@ -311,5 +312,25 @@ def get_yasara_foldx_stability_features():
     with open(output_dir + output_fname, write_mode) as f:
         f.write(txt_all)
 
-if __name__ == "__main__":  # confirms that the code is under main function
-    get_yasara_foldx_stability_features()
+if __name__ == "__main__":  
+    
+    # define directories & filenames
+    input_fname = 'GOh1052_mutPos_DomainIII.txt'
+    input_pdb_fname = 'YASARA_2EIE_GOh1052.pdb'
+    output_fname = 'DDGstability_GOh1052.csv'
+    input_dir = data_folder + 'feature_extraction/Input/'
+    pdb_dir = input_dir
+    output_dir = data_folder + 'feature_extraction/'
+    remove_existing_dir = False
+    receptor_molname = 'A'
+
+    get_yasara_foldx_stability_features(
+        input_fname,
+        input_pdb_fname,
+        output_fname,
+        input_dir,
+        pdb_dir,
+        output_dir,
+        remove_existing_dir,
+        receptor_molname,
+    )
