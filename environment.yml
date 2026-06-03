@@ -1,0 +1,25 @@
+name: pips-design-toolkit
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      # GPU install:
+      - pip
+      - setuptools
+      - wheel
+      - autogluon
+      # CPU-only alternative:
+      # pip install autogluon --extra-index-url https://download.pytorch.org/whl/cpu
+      - pandas==2.2.2
+      - matplotlib==3.9.2
+      - biopython==1.85
+      - selenium==4.28.1
+      - webdriver-manager==4.0.2
+      - lxml==5.3.0
+      - fair-esm==2.0.0
+      - jupyter==1.1.1
+      - catboost
+      - psutil<6
+      - setuptools<81
