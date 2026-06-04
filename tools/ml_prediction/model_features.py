@@ -59,6 +59,9 @@ def _build_plm_features(plm_name: str, embedding_size: int):
         f'{plm_name}_seq_embeddings_MT': [f'{plm_name}_{i}_MT' for i in range(1, embedding_size + 1)],
         f'{plm_name}_LLRsum_entropy': ['LLR', 'entropy'],
         f'{plm_name}_LLRsum': ['LLR'],
+        f'{plm_name}_mut_embeddings_MT_LLRsum': [f'{plm_name}_{i}_MT' for i in range(1, embedding_size + 1)] + ['LLR'],
+        f'{plm_name}_seq_embeddings_MT_LLRsum': [f'{plm_name}_{i}_MT' for i in range(1, embedding_size + 1)] + ['LLR'],
+        f'AggStabBind-mut_{_plm_name}_LLRsum': COMPOSITE_FEATURESETS['AggStabBind-mut'] + ['LLR']
     }
 
 
@@ -91,10 +94,13 @@ FEATURESET_DIRECTORY_REGISTRY = {
 }
 for _plm_name in PLM_EMBEDDING_SIZES:
     FEATURESET_DIRECTORY_REGISTRY.update({
-        f'{_plm_name}_LLRsum_entropy': 'conservation_and_distance',
-        f'{_plm_name}_LLRsum': 'conservation_and_distance',
+        f'{_plm_name}_LLRsum': 'feature_extraction',
         f'{_plm_name}_mut_embeddings_MT': 'feature_extraction',
         f'{_plm_name}_seq_embeddings_MT': 'feature_extraction',
+        f'{_plm_name}_mut_embeddings_MT_LLRsum': 'feature_extraction',
+        f'{_plm_name}_seq_embeddings_MT_LLRsum': 'feature_extraction',
+        f'oheMT_{_plm_name}_LLRsum': 'feature_extraction',
+        f'AggStabBind-mut_{_plm_name}_LLRsum': 'feature_extraction',
     })
 
 
@@ -116,7 +122,7 @@ def get_feature_combinations(plm_name_list, feature_combinations=None, include_n
 
     feature_combinations_nonplm = {
         # 'oheMT': ['oheMT'],
-        'AggStabBind-mut': ['AggStabBind-mut'],
+        # 'AggStabBind-mut': ['AggStabBind-mut'],
     }
 
     if include_nonplm_featuresets:
@@ -127,7 +133,7 @@ def get_feature_combinations(plm_name_list, feature_combinations=None, include_n
             # f'{plm_name}_LLRsum': [f'{plm_name}_LLRsum'],
             # f'{plm_name}_mut_embeddings_MT': [f'{plm_name}_mut_embeddings_MT'],
             # f'{plm_name}_seq_embeddings_MT': [f'{plm_name}_seq_embeddings_MT'],
-            # f'{plm_name}_mut_embeddings_MT_LLRsum': [f'{plm_name}_mut_embeddings_MT', f'{plm_name}_LLRsum'],
+            f'{plm_name}_mut_embeddings_MT_LLRsum': [f'{plm_name}_mut_embeddings_MT', f'{plm_name}_LLRsum'],
             # f'{plm_name}_seq_embeddings_MT_LLRsum': [f'{plm_name}_seq_embeddings_MT', f'{plm_name}_LLRsum'],
             # f'oheMT_{plm_name}_LLRsum': ['oheMT', f'{plm_name}_LLRsum'],
             # f'AggStabBind-mut_{plm_name}_LLRsum': ['AggStabBind-mut', f'{plm_name}_LLRsum'],

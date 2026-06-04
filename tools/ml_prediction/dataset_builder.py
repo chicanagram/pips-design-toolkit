@@ -68,9 +68,6 @@ def validate_feature_merge(df, feature_list, component_featureset, expected_size
 
 def _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder=''):
     fname_base = component_featureset
-    if 'LLRsum' in fname_base and 'entropy' not in fname_base:
-        fname_base = fname_base.replace('_LLRsum', '_LLRsum_entropy')
-
     base_name = f'{fname_prefix}{fname_base}'
     candidates = []
     if data_subfolder:

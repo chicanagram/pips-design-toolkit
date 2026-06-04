@@ -5,6 +5,7 @@ import pandas as pd
 
 
 def load_data_allsuffixes(data_fname, data_folder, data_suffix_list=None, fmt='.csv'):
+
     if data_suffix_list is None:
         data_suffix_list = ['']
     # load csv data
