@@ -208,6 +208,10 @@ def ml_autogluon_train_test_random(args=None):
         required_extra_cols=required_extra_cols,
         n_splits=n_splits,
     )
+    print(f'Featureset: {featureset}')
+    print(f'Input mode: {args.input_mode}')
+    print(f'Label column: {y_feature}')
+    print(f'Assembled feature count: {len(x_features)}')
 
     if filt_by:
         filt_thres = get_filter_thresholds(filt_by, args.filt_sift, args.filt_shanms, args.filt_dist)
@@ -227,6 +231,8 @@ def ml_autogluon_train_test_random(args=None):
         stratify=args.stratify,
         random_state=args.random_state,
     )
+    print(f'Total samples: {len(XY_data)}')
+    print(f'Number of CV splits: {len(split_idxs_list)}')
 
     output_dir = project_data_dir / 'ml_prediction' / 'Output'
     if data_subfolder:
@@ -244,13 +250,13 @@ def ml_autogluon_train_test_random(args=None):
     predictions_test_all_fracs = []
 
     for data_frac in data_frac_list:
-        print(f'\n>>> Processing data fraction: {data_frac}')
+        print(f'\n>>> Featureset={featureset} | data_frac={data_frac}')
         ensemble_metrics = []
         split_metrics = []
         predictions_test_all = []
 
         for split_idx, (train_index, test_index) in enumerate(split_idxs_list):
-            print(f'Split {split_idx + 1}/{n_splits}')
+            print(f'--> Featureset={featureset} | data_frac={data_frac} | split={split_idx + 1}/{n_splits}')
             XY_train = XY_data.iloc[train_index].reset_index(drop=True)
             XY_test = XY_data.iloc[test_index].reset_index(drop=True)
 
