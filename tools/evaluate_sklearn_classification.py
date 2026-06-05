@@ -452,6 +452,8 @@ def evaluate_classification(
 
 if __name__ == "__main__":
     data_folder = DEFAULT_DATA_FOLDER
+    # `fname_prefix` / `labels_actual_fname` identify the dataset and label files.
+    # `data_subfolder` controls feature lookup and output/model subdirectories.
     data_subfolder = 'GOh1052'
     labels_actual_fname = 'GOh1052_mutagenesis'
     labels_dir = Path(data_folder) / subfolders['expdata']

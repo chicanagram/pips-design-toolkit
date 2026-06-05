@@ -68,7 +68,7 @@ python compile_analyse_dataset.py
 ### B) Run code from jupyter notebooks
 From within the repo, start Jupyter notebook:
 ```
-jupyter notebook
+jupyter notebook notebooks/
 ```
 To run a notebook, simply load the notebook and execute the cells in succession. 
 Detailed instructions on software requirements and licenses, how to set up the requirements, and input files needed to execute each notebook can be found in the notebooks.
@@ -79,7 +79,7 @@ Detailed instructions on software requirements and licenses, how to set up the r
 Computes residue-level conservation scores from multiple sequence alignments and pairwise distance features from structural data to capture evolutionary and spatial constraints.
 
 * Script: [get_conservation_and_distance_scores.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/get_conservation_and_distance_scores.py)
-* Notebook: [get_conservation_and_distance_scores.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/get_conservation_and_distance_scores.ipynb)
+* Notebook: [get_conservation_and_distance_scores.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/get_conservation_and_distance_scores.ipynb)
 
 #### 2. Get Binding, Stability and Aggregation features
 
@@ -88,7 +88,7 @@ Extracts features related to binding, stability, and aggregation propensity to c
 Requirements: YASARA Structure installation (license needed); FoldX installation (license needed); Tango executable (license needed); Waltz (perl script incl.)
 
 * Script: [get_binding_stability_agg_features.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/get_binding_stability_agg_features.py)
-* Notebook: [get_binding_stability_agg_features.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/get_binding_stability_agg_features.ipynb)
+* Notebook: [get_binding_stability_agg_features.py.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/get_binding_stability_agg_features.py.ipynb)
 
 #### 3. Get PLM zero-shot scores and embedding features
 
@@ -97,21 +97,21 @@ Uses pretrained protein language models (PLMs) to generate zero-shot mutation li
 Requirements: fair-esm library installed (incl. in conda environment)
 
 * Script: [get_pLM_zeroshot_scores_embeddings.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/get_pLM_zeroshot_scores_embeddings.py)
-* Notebook: [get_pLM_zeroshot_scores_embeddings.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/get_pLM_zeroshot_scores_embeddings.ipynb)
+* Notebook: [get_pLM_zeroshot_scores_embeddings.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/get_pLM_zeroshot_scores_embeddings.ipynb)
 
 #### 4. Select mutants for first-round of protein engineering using zero-shot scores
 
 Applies PLM zero-shot scores and other scores to prioritize and select candidate mutations likely to preserve or enhance protein function.
 
-* Script: [select_zeroshot_mutants.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/select_zeroshot_mutants.ipynb)
-* Notebook: [select_zeroshot_mutants.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/select_zeroshot_mutants.py)
+* Script: [select_zeroshot_mutants.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/select_zeroshot_mutants.py)
+* Notebook: [select_zeroshot_mutants.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/select_zeroshot_mutants.ipynb)
 
 #### 5. Compile all features extracted into a dataset
 
 Compiles raw feature scores from multiple sources into a unified dataset for further exploratory analysis and machine learning model evaluation.
 
 * Script: [compile_analyse_dataset.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/compile_analyse_dataset.py)
-* Notebook: [compile_analyse_dataset.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/compile_analyse_dataset.ipynb)
+* Notebook: [compile_analyse_dataset.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/compile_analyse_dataset.ipynb)
 
 #### 6. Train AutoML models on mutagenesis assay data
 
@@ -121,7 +121,7 @@ The full list of model features can be found in the `feature_names_multimodal` v
 The features utilized in the AutoML models include the Binding, Stability and Aggregation (Waltz and Tango) features. 
 
 * Script: [evaluate_autogluon_classification.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/evaluate_autogluon_classification.py)
-* Notebook: [evaluate_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/evaluate_classification.ipynb)
+* Notebook: [evaluate_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/evaluate_classification.ipynb)
 
 #### 7. Train traditional ML models on mutagenesis assay data
 
@@ -138,7 +138,7 @@ The features utilized in the sklearn models include various combinations of:
 - esm2-33_mut_embeddings_MT (embedding vector corresponding to mutated residue)
 ```
 * Script: [evaluate_sklearn_classification.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/evaluate_sklearn_classification.py)
-* Notebook: [evaluate_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/evaluate_classification.ipynb)
+* Notebook: [evaluate_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/evaluate_classification.ipynb)
 
 ## 4. Feature extraction software dependencies
 While the multimodal activity prediction model can be trained using the dataset provided (see Section B) using the open-source Autogluon library, full extraction of the dataset features requires some other supporting software.

@@ -67,25 +67,24 @@ def validate_feature_merge(df, feature_list, component_featureset, expected_size
 
 
 def _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder=''):
-    fname_base = component_featureset
-    base_name = f'{fname_prefix}{fname_base}'
+    base_name = f'{fname_prefix}{component_featureset}'
     candidates = []
     if data_subfolder:
         candidates.append(str(Path(data_subfolder) / base_name))
     candidates.append(base_name)
-    return fname_base, candidates
+    return candidates
 
 
 def resolve_feature_stem(data_folder, component_featureset, fname_prefix, data_subfolder=''):
     feature_dir = subfolders[get_featureset_dir(component_featureset)]
     fmt = '.csv' if feature_names[component_featureset] is not None else ARRAY_FEATURE_FORMATS.get(component_featureset, '.csv')
 
-    for candidate in _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder)[1]:
+    for candidate in _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder):
         stem_path = as_path(data_folder) / feature_dir / candidate
         if stem_path.with_suffix(fmt).exists():
             return feature_dir, candidate
 
-    _, candidates = _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder)
+    candidates = _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder)
     return feature_dir, candidates[0]
 
 

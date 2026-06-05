@@ -47,6 +47,7 @@ from tools.ml_prediction.dataset_builder import (
     assemble_featureset_dataset,
     load_precompiled_dataset,
 )
+from tools.ml_prediction.model_features import resolve_component_featuresets
 from tools.ml_prediction.classification_eval_utils import (
     REFERENCE_METRICS,
     get_filter_thresholds,
@@ -97,6 +98,7 @@ def parse_args():
         parser.add_argument('--filt_dist', default='20,50', type=str, help='Filter by distance to substrate')
         parser.add_argument('--featureset', default='AggStabBind-mut', type=str, help='Feature set name')
         parser.add_argument('--ylabel', default='CategoryV3', type=str, help='Classification label column')
+        parser.add_argument('--output_fname', default='', help='Optional output filename stem for saved result CSVs')
         parser.add_argument('--save_model', action='store_true', help='Save each fold model under trained_models/')
         parser.add_argument('--split_type', default='random', choices=['random'], help='Cross-validation split type')
         parser.add_argument('--filter_stage', default='train_only', choices=['dataset', 'train_only'], help='Apply the score filter before CV or only on each training fold')
@@ -133,15 +135,16 @@ def _load_input_dataset(args, dataset_fbase, featureset, ylabel, required_extra_
         )
 
     labels_actual_fname = args.labels_actual_fname or f'{dataset_fbase}_mutagenesis'
+    component_featureset_list = resolve_component_featuresets(featureset)
     return assemble_featureset_dataset(
         data_folder=as_path(args.project_data_folder),
-        data_subfolder=args.data_subfolder or dataset_fbase,
+        data_subfolder=args.data_subfolder,
         labels_dir=as_path(args.project_data_folder) / subfolders['expdata'],
         data_suffix_list=[''],
         fname_prefix=f'{dataset_fbase}_',
         labels_actual_fname=labels_actual_fname,
         ylabel_list=[ylabel],
-        component_featureset_list=[featureset],
+        component_featureset_list=component_featureset_list,
         extra_cols_to_get=required_extra_cols,
         filter_out_data={'mutations': ['WT', 'NC', 'X']},
         filter_in_data={},
@@ -192,6 +195,7 @@ def ml_autogluon_train_test_random(args=None):
     data_frac_list = _parse_data_fracs(args.data_fracs)
     y_feature = args.ylabel
     res_cols, res_cols_summary = get_result_columns(REFERENCE_METRICS)
+    data_subfolder = args.data_subfolder or ''
     required_extra_cols = ['protein_name', 'mutations', 'name', 'fold_random_5', f'fold_random_{n_splits}']
     if filt_by and 'Position' not in required_extra_cols:
         required_extra_cols.append('Position')
@@ -213,6 +217,7 @@ def ml_autogluon_train_test_random(args=None):
     else:
         filt_thres = None
         dataset_label = dataset_fbase
+    output_fname = args.output_fname or dataset_label
 
     split_idxs_list, _ = get_random_split_idxs(
         XY_data,
@@ -223,9 +228,11 @@ def ml_autogluon_train_test_random(args=None):
         random_state=args.random_state,
     )
 
-    output_dir = project_data_dir / 'ml_prediction' / 'Output' / dataset_label
+    output_dir = project_data_dir / 'ml_prediction' / 'Output'
+    if data_subfolder:
+        output_dir = output_dir / data_subfolder
     output_dir.mkdir(parents=True, exist_ok=True)
-    save_res = output_dir / dataset_label
+    save_res = output_dir / output_fname
     ensemble_metrics_path = f'{save_res}_ensemble_metrics.csv'
     split_metrics_path = f'{save_res}_split_metrics.csv'
     split_metrics_summary_path = f'{save_res}_split_metrics_summary.csv'
@@ -259,7 +266,10 @@ def ml_autogluon_train_test_random(args=None):
 
             save_model = None
             if args.save_model:
-                save_model = str(project_data_dir / 'ml_prediction' / 'trained_models' / dataset_label / f'datafrac_{data_frac}' / f'fold_{split_idx}')
+                save_model_dir = project_data_dir / 'ml_prediction' / 'trained_models'
+                if data_subfolder:
+                    save_model_dir = save_model_dir / data_subfolder
+                save_model = str(save_model_dir / dataset_label / f'datafrac_{data_frac}' / f'fold_{split_idx}')
 
             predictor, y_pred_test, res = autogluon_classifier(
                 train_data,
@@ -386,7 +396,7 @@ if __name__ == "__main__":
         project_data_folder=_default_project_data_dir(),
         input_mode='assembled',
         labels_actual_fname='GOh1052_mutagenesis',
-        data_subfolder='', # 'GOh1052',
+        data_subfolder='GOh1052',
         n_splits=4,
         num_bag_folds=8,
         num_stack_levels=1,
@@ -394,8 +404,9 @@ if __name__ == "__main__":
         filt_shanms=[0.5, 1.5],
         filt_sift=[0.1, 0.45],
         filt_dist=[20, 50],
-        featureset='esm2-33_mut_embeddings_MT_LLRsum',# 'AggStabBind-mut',
+        featureset= 'esm2-33_mut_embeddings_MT_LLRsum',#'AggStabBind-mut', #
         ylabel='CategoryV3',
+        output_fname='GOh1052_mutemb',
         save_model=False,
         split_type='random',
         filter_stage='train_only',
@@ -404,7 +415,7 @@ if __name__ == "__main__":
         random_state=42,
         n_boot=1000,
         ci=0.95,
-        data_fracs= [1, 0.75, 0.5, 0.25, 0.1, 0.05], # [1],
+        data_fracs= [0.05, 0.1, 0.25, 0.5], # [1],
         save_y_predictions=False,
         show_only_test_results=False,
     )

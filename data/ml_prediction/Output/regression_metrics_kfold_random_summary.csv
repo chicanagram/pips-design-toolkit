@@ -1,2 +1,0 @@
-,ylabel,Featureset,p,n,Model,split_type,train_or_test,r2,SpearmanR,PearsonR,r2_avg,r2_std,SpearmanR_avg,SpearmanR_std,PearsonR_avg,PearsonR_std
-1,Fold (Max Abs),esm2-33_LLRsum_entropy,2,6686,xgb,random,test,0.593,0.766,0.771,0.593,0.017,0.766,0.009,0.771,0.011

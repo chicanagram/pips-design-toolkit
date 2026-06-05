@@ -47,7 +47,7 @@ def get_leaderboard_metrics(data, label, predictor, leaderboard, metrics, train_
         if train_or_test=='test':
             y_pred_dict[model] = predictor.predict(data.drop(columns=[label]), model=model)
         elif train_or_test=='train':
-            y_pred_dict[model] = predictor.get_oof_pred(train_data=data.drop(columns=[label]), model=model)
+            y_pred_dict[model] = predictor.predict_oof(train_data=data.drop(columns=[label]), model=model)
         # calculate metrics
         metric_vals = calculate_sklearn_metrics(y, y_pred_dict[model], metrics)
         leaderboard.loc[(leaderboard.model == model), metrics] = metric_vals
@@ -144,6 +144,3 @@ def load_autogluon_tutorial_datasets(tutorial_name, y_feature):
         val_data = new_data[:5000].copy()
 
         return train_data, test_data_label, test_data_nolabel, val_data
-
-
-
