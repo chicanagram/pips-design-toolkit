@@ -121,7 +121,7 @@ The full list of model features can be found in the `feature_names_multimodal` v
 The features utilized in the AutoML models include the Binding, Stability and Aggregation (Waltz and Tango) features. 
 
 * Script: [evaluate_autogluon_classification.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/evaluate_autogluon_classification.py)
-* Notebook: [evaluate_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/evaluate_classification.ipynb)
+* Notebook: [evaluate_autogluon_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/evaluate_autogluon_classification.ipynb)
 
 #### 7. Train traditional ML models on mutagenesis assay data
 
@@ -138,7 +138,7 @@ The features utilized in the sklearn models include various combinations of:
 - esm2-33_mut_embeddings_MT (embedding vector corresponding to mutated residue)
 ```
 * Script: [evaluate_sklearn_classification.py](https://github.com/chicanagram/pips-design-toolkit/blob/main/tools/evaluate_sklearn_classification.py)
-* Notebook: [evaluate_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/evaluate_classification.ipynb)
+* Notebook: [evaluate_autogluon_classification.ipynb](https://github.com/chicanagram/pips-design-toolkit/blob/main/notebooks/evaluate_autogluon_classification.ipynb)
 
 ## 4. Feature extraction software dependencies
 While the multimodal activity prediction model can be trained using the dataset provided (see Section B) using the open-source Autogluon library, full extraction of the dataset features requires some other supporting software.

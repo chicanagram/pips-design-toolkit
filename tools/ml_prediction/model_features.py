@@ -13,7 +13,7 @@ PLM_EMBEDDING_SIZES = {
 #######################################
 BASE_FEATURE_COLUMNS = {
     'oheMT': None,
-    'binding_mut': [
+    'binding-mut': [
         'avg_epotWTRtr', 'avg_esolWTcolRtr', 'avg_esolWTvdwRtr', 'avg_surfaccWTRtr',
         'avg_epotMTRtr', 'avg_esolMTcolRtr', 'avg_esolMTvdwRtr', 'avg_surfaccMTRtr',
         'avg_epotWTCpx', 'avg_esolWTcolCpx', 'avg_esolWTvdwCpx', 'avg_surfaccWTCpx',
@@ -34,6 +34,7 @@ BASE_FEATURE_COLUMNS = {
     ],
     'tango': ['Aggregation_tango', 'Beta', 'Turn', 'Helix'],
     'waltz': ['Aggregation_waltz'],
+    'Aggregation': ['Aggregation_tango', 'Beta', 'Turn', 'Helix', 'Aggregation_waltz']
 }
 
 
@@ -42,7 +43,7 @@ BASE_FEATURE_COLUMNS = {
 ###########################################
 COMPOSITE_FEATURESETS = {
     'AggStabBind-mut': (
-        BASE_FEATURE_COLUMNS['binding_mut']
+        BASE_FEATURE_COLUMNS['binding-mut']
         + BASE_FEATURE_COLUMNS['stability_foldx']
         + BASE_FEATURE_COLUMNS['tango']
         + BASE_FEATURE_COLUMNS['waltz']
@@ -115,8 +116,9 @@ def resolve_component_featuresets(featureset):
 #####################################
 FEATURESET_DIRECTORY_REGISTRY = {
     'oheMT': 'feature_extraction',
-    'binding_mut': 'feature_extraction',
+    'Aggregation': 'feature_extraction',
     'stability_foldx': 'feature_extraction',
+    'binding-mut': 'feature_extraction',
     'tango': 'feature_extraction',
     'waltz': 'feature_extraction',
     'AggStabBind-mut': 'feature_extraction',

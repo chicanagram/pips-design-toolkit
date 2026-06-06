@@ -40,6 +40,8 @@ def summarize_split_metrics(split_metrics_df, metrics_list):
     summary_rows = []
     for train_or_test in ['train', 'test']:
         subset = split_metrics_df.loc[split_metrics_df['train_or_test'] == train_or_test]
+        if subset.empty:
+            continue
         row = {'train_or_test': train_or_test}
         for metric in metrics_list:
             row[metric] = subset[metric].mean()

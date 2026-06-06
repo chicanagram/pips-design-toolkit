@@ -67,11 +67,20 @@ def validate_feature_merge(df, feature_list, component_featureset, expected_size
 
 
 def _candidate_feature_bases(component_featureset, fname_prefix, data_subfolder=''):
-    base_name = f'{fname_prefix}{component_featureset}'
+    candidate_feature_names = [component_featureset]
+    if component_featureset.startswith('esm2-33_'):
+        candidate_feature_names.append(component_featureset.replace('esm2-33_', 'esm2_'))
+    if component_featureset.endswith('_mut_embeddings_MT'):
+        candidate_feature_names.append(component_featureset.replace('_mut_embeddings_MT', '_mut_embeddings'))
+    if component_featureset.endswith('_seq_embeddings_MT'):
+        candidate_feature_names.append(component_featureset.replace('_seq_embeddings_MT', '_seq_embeddings'))
+
     candidates = []
-    if data_subfolder:
-        candidates.append(str(Path(data_subfolder) / base_name))
-    candidates.append(base_name)
+    for feature_name in candidate_feature_names:
+        base_name = f'{fname_prefix}{feature_name}'
+        if data_subfolder:
+            candidates.append(str(Path(data_subfolder) / base_name))
+        candidates.append(base_name)
     return candidates
 
 
@@ -200,13 +209,24 @@ def assemble_featureset_dataset(
     return df, feature_list_all
 
 
-def load_precompiled_dataset(input_dir, dataset_fbase, featureset, ylabel, extra_cols_to_get=None, n_splits=5):
+def load_precompiled_dataset(input_dir, dataset_fbase, featureset, ylabel, extra_cols_to_get=None, n_splits=5, input_csv_path=None, require_label=True):
     input_dir = as_path(input_dir)
     x_features = feature_names_multimodal.get(featureset, feature_names[featureset])
-    dataset_fpath = input_dir / f'{dataset_fbase}_{featureset}.csv'
+    if input_csv_path is None:
+        dataset_fpath = input_dir / f'{dataset_fbase}_{featureset}.csv'
+    else:
+        dataset_fpath = Path(input_csv_path)
+        if not dataset_fpath.is_absolute():
+            dataset_fpath = input_dir / dataset_fpath
+        if dataset_fpath.suffix != '.csv':
+            dataset_fpath = dataset_fpath.with_suffix('.csv')
     df_all = pd.read_csv(dataset_fpath)
 
-    base_cols = list(x_features) + [ylabel]
+    base_cols = list(x_features)
+    if require_label:
+        base_cols += [ylabel]
+    elif ylabel in df_all.columns:
+        base_cols += [ylabel]
     optional_candidates = list(extra_cols_to_get or [])
     optional_candidates += ['mutations', 'Position', 'fold_random_5', f'fold_random_{n_splits}', 'protein_name', 'name']
     optional_cols = [c for c in optional_candidates if c in df_all.columns and c not in base_cols]

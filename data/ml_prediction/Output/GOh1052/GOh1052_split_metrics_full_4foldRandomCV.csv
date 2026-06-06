@@ -1,9 +1,0 @@
-dataset,ylabel,Featureset,Model,split_type,filter,filter_stage,data_frac,train_n,test_n,train_or_test,split_label,MCC,Accuracy,F1,Precision,Recall,Precision_-1,Precision_0,Precision_1,Recall_-1,Recall_0,Recall_1
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5014,1672,train,0,0.6127,0.7525,0.7389,0.7495,0.7318,0.8471,0.6981,0.7034,0.8028,0.7735,0.619
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5014,1672,test,0,0.606,0.7476,0.7332,0.74,0.7283,0.8646,0.6927,0.6626,0.8085,0.7558,0.6207
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5014,1672,train,1,0.6224,0.7585,0.7452,0.7525,0.7398,0.8512,0.7092,0.6972,0.8175,0.7663,0.6357
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5014,1672,test,1,0.5616,0.7189,0.7088,0.7156,0.7046,0.8212,0.6688,0.6566,0.7472,0.7384,0.6282
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5015,1671,train,2,0.6129,0.7501,0.742,0.74,0.7448,0.8426,0.7178,0.6595,0.8097,0.7171,0.7076
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5015,1671,test,2,0.6281,0.7612,0.7485,0.7499,0.7473,0.859,0.7231,0.6676,0.8291,0.7471,0.6657
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5015,1671,train,3,0.6125,0.7519,0.7383,0.7437,0.7342,0.8463,0.7069,0.6779,0.8129,0.7553,0.6344
-GOh1052,CategoryV3,AggStabBind-mut,autogluon,random,,train_only,1,5015,1671,test,3,0.6163,0.7546,0.7433,0.7521,0.7369,0.8491,0.698,0.7093,0.8101,0.7627,0.6379

@@ -1,0 +1,13 @@
+,segment,n,frac_Cat1,frac_Cat2,frac_Cat3,frac_Cat2&3
+0,sift,3932,0.301,0.501,0.199,0.7
+1,nonsift,2754,0.076,0.29,0.634,0.9239999999999999
+2,sift (non-polar aliphatic),1387,0.296,0.496,0.208,0.704
+3,nonsift (non-polar aliphatic),948,0.083,0.312,0.604,0.9159999999999999
+4,sift (polar uncharged),947,0.321,0.544,0.135,0.679
+5,nonsift (polar uncharged),683,0.079,0.335,0.586,0.921
+6,sift (aromatic),604,0.199,0.553,0.248,0.801
+7,nonsift (aromatic),416,0.053,0.248,0.7,0.948
+8,sift (-ve charged acidic),397,0.36,0.416,0.224,0.64
+9,nonsift (-ve charged acidic),280,0.089,0.218,0.693,0.9109999999999999
+10,sift (+ve charged basic),597,0.342,0.446,0.213,0.659
+11,nonsift (+ve charged basic),427,0.066,0.258,0.677,0.935
